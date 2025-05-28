@@ -1,4 +1,3 @@
-import {createMachine} from "xstate"
 import { createModel } from 'xstate/lib/model'
 import type { GridState, Player, PlayerColor } from "../types"
 
@@ -32,10 +31,10 @@ export const GameModel = createModel({
   }
 })
 
-export const machine = createMachine({
+export const machine = GameModel.createMachine({
   id: "game",
   initial: GameStates.LOBBY,
-  context: GameModel,
+  context: GameModel.initialContext,
   states:{
     [GameStates.LOBBY]:{
       on: {

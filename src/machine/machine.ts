@@ -1,6 +1,6 @@
 import {createMachine} from "xstate"
 import { createModel } from 'xstate/lib/model'
-import type { GridState, Player } from "../types"
+import type { GridState, Player, PlayerColor } from "../types"
 
 enum GameStates {
   LOBBY = "LOBBY",
@@ -21,6 +21,15 @@ export const GameModel = createModel({
     ["E", "E", "E", "E", "E", "E", "E"],
     ["E", "E", "E", "E", "E", "E", "E"]
   ] as GridState,
+}, {
+  events:{
+    join:(playerId: Player["id"], name: Player["name"]) => ({playerId, name}),
+    leave:(playerID: Player["id"]) => ({playerID}),
+    chooseColor:(playerId: Player["id"], color: PlayerColor) => ({playerId, color}),
+    start:(playerId: Player["id"]) => ({playerId}),
+    dropToken: (playerId: Player["id"], x: number) => ({playerId, x}),
+    restart: (playerId: Player["id"]) => ({playerId})
+  }
 })
 
 export const machine = createMachine({

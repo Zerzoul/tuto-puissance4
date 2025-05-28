@@ -1,7 +1,7 @@
 import { createModel } from 'xstate/lib/model'
 import type { GridState, Player, PlayerColor } from "../types"
-import { canJoinGuard } from './guards'
-import { joinGameAction } from './actions'
+import { canChooseColorGuard, canJoinGuard, canLeaveGuard, canStartGameGuard } from './guards'
+import { joinGameAction, leaveGameAction } from './actions'
 
 enum GameStates {
   LOBBY = "LOBBY",
@@ -46,12 +46,16 @@ export const GameMachine = GameModel.createMachine({
           target: GameStates.LOBBY
         },
         leave:{
+          cond: canLeaveGuard,
+          actions: [GameModel.assign(leaveGameAction)],
           target: GameStates.LOBBY
         },
         chooseColor:{
+          cond: canChooseColorGuard,
           target: GameStates.LOBBY
         },
         start:{
+          cond: canStartGameGuard,
           target: GameStates.PLAY
         }
       }

@@ -1,14 +1,10 @@
 import { createModel } from 'xstate/lib/model'
-import type { GridState, Player, PlayerColor } from "../types"
-import { canChooseColorGuard, canJoinGuard, canLeaveGuard, canStartGameGuard } from './guards'
-import { joinGameAction, leaveGameAction } from './actions'
+import { GameStates, type GameContext, type GridState, type Player, type PlayerColor } from "../types"
+import { canChooseColorGuard, canDropTokenGuard, canJoinGuard, canLeaveGuard, canStartGameGuard } from './guards'
+import { dropToken, joinGameAction, leaveGameAction, switchPlayerAction } from './actions'
+import { interpret, type InterpreterFrom } from 'xstate'
 
-enum GameStates {
-  LOBBY = "LOBBY",
-  PLAY = "PLAY",
-  VICTORY = "VICTORY",
-  DRAW = "DRAW"
-}
+
 
 export const GameModel = createModel({
   players: [] as Player[],
@@ -63,7 +59,11 @@ export const GameMachine = GameModel.createMachine({
     [GameStates.PLAY]:{
       on:{
         dropToken:{
-          target: GameStates.VICTORY
+          cond: canDropTokenGuard,
+          target: GameStates.PLAY,
+          actions: [
+            GameModel.assign(dropToken),
+            GameModel.assign(switchPlayerAction)]
         }
       }
     },
@@ -83,3 +83,15 @@ export const GameMachine = GameModel.createMachine({
     }
   }
 })
+
+export function makeGame(state: GameStates = GameStates.LOBBY, context: Partial<GameContext> = {}): InterpreterFrom<typeof GameMachine> {
+  const machine = interpret(
+    GameMachine.withContext({
+      ...GameModel.initialContext,
+      ...context
+    })
+  ).start()
+  machine.state.value = state
+  return machine
+
+}

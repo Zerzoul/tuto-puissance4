@@ -1,4 +1,5 @@
 import {createMachine} from "xstate"
+import type { GridState, Player } from "../types"
 
 enum GameStates {
   LOBBY = "LOBBY",
@@ -6,9 +7,25 @@ enum GameStates {
   VICTORY = "VICTORY",
   DRAW = "DRAW"
 }
+
+export const GameModel = {
+  players: [] as Player[],
+  currentPlayer: null as null | Player['id'],
+  rowLength: 4,
+  grid:[
+    ["E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E"],
+    ["E", "E", "E", "E", "E", "E", "E"]
+  ] as GridState,
+}
+
 export const machine = createMachine({
   id: "game",
   initial: GameStates.LOBBY,
+  context: GameModel,
   states:{
     [GameStates.LOBBY]:{
       on: {

@@ -2,8 +2,6 @@ import {beforeEach, describe, expect, it} from "vitest"
 import { interpret, type InterpreterFrom } from "xstate"
 import { GameMachine, GameModel, makeGame } from "../../machine/GameMachine"
 import { PlayerColor, GameStates } from "../../types"
-import { canDropTokenGuard, canLeaveGuard } from "../../machine/guards"
-
 
 describe("machine/GameMachine", () => {
 
@@ -23,6 +21,13 @@ describe("machine/GameMachine", () => {
     it('Should not let me join a game twice', () => {
       expect(machine.send(GameModel.events.join("1", "1")).changed).toBe(true)
       expect(machine.send(GameModel.events.join("1", "1")).changed).toBe(false)
+    })
+
+    it('Should let player1 choose yellow and not player 2', () => {
+      expect(machine.send(GameModel.events.join("1", "1")).changed).toBe(true)
+      expect(machine.send(GameModel.events.join("2", "2")).changed).toBe(true)
+      expect(machine.send(GameModel.events.chooseColor("1", PlayerColor.YELLOW)).changed).toBe(true)
+      expect(machine.send(GameModel.events.chooseColor("2", PlayerColor.YELLOW)).changed).toBe(false)
     })
 
     it('Should let me leave', () => {
@@ -75,5 +80,24 @@ describe("machine/GameMachine", () => {
       expect(machine.state.value).toBe(GameStates.VICTORY)
       expect(machine.state.context.winingPositions).toHaveLength(4)
     })
+
+    it("Should handle draw", () => {
+      machine = makeGame(GameStates.PLAY, {
+        ...machine.state.context,
+        grid: [
+          ["E", "Y", "Y", "Y", "Y", "Y", "Y"],
+          ["Y", "Y", "Y", "Y", "Y", "Y", "Y"],
+          ["Y", "Y", "Y", "Y", "Y", "Y", "Y"],
+          ["Y", "Y", "Y", "Y", "Y", "Y", "Y"],
+          ["Y", "Y", "Y", "Y", "Y", "Y", "Y"],
+          ["Y", "Y", "Y", "Y", "Y", "Y", "Y"],
+        ]
+      })
+      expect(machine.send(GameModel.events.dropToken("1", 0)).changed).toBe(true)
+      expect(machine.state.value).toBe(GameStates.DRAW)
+    })
   })
+
+
+
 })

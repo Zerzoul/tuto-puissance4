@@ -1,7 +1,7 @@
 import { createModel } from 'xstate/lib/model'
-import { GameStates, type GameContext, type GridState, type Player, type PlayerColor } from "../types"
-import { canChooseColorGuard, canDropTokenGuard, canJoinGuard, canLeaveGuard, canStartGameGuard } from './guards'
-import { dropToken, joinGameAction, leaveGameAction, switchPlayerAction } from './actions'
+import { GameStates, type GameContext, type GridState, type Player, type PlayerColor, type Postion } from "../types"
+import { canChooseColorGuard, canDropTokenGuard, canJoinGuard, canLeaveGuard, canStartGameGuard, isWiningMoveGuard } from './guards'
+import { dropTokenAction, joinGameAction, leaveGameAction, saveWiningPositionsAction, switchPlayerAction } from './actions'
 import { interpret, type InterpreterFrom } from 'xstate'
 
 
@@ -10,6 +10,7 @@ export const GameModel = createModel({
   players: [] as Player[],
   currentPlayer: null as null | Player['id'],
   rowLength: 4,
+  winingPositions: [] as Postion[],
   grid:[
     ["E", "E", "E", "E", "E", "E", "E"],
     ["E", "E", "E", "E", "E", "E", "E"],
@@ -58,13 +59,18 @@ export const GameMachine = GameModel.createMachine({
     },
     [GameStates.PLAY]:{
       on:{
-        dropToken:{
-          cond: canDropTokenGuard,
-          target: GameStates.PLAY,
-          actions: [
-            GameModel.assign(dropToken),
-            GameModel.assign(switchPlayerAction)]
-        }
+        dropToken:[
+          {
+            cond: isWiningMoveGuard,
+            target: GameStates.VICTORY,
+            actions: [GameModel.assign(saveWiningPositionsAction),GameModel.assign(dropTokenAction)]
+          },
+          {
+            cond: canDropTokenGuard,
+            target: GameStates.PLAY,
+            actions: [GameModel.assign(dropTokenAction), GameModel.assign(switchPlayerAction)]
+          }
+        ]
       }
     },
     [GameStates.DRAW]:{

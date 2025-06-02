@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it} from "vitest"
 import { interpret, type InterpreterFrom } from "xstate"
 import { GameMachine, GameModel, makeGame } from "../../machine/GameMachine"
 import { PlayerColor, GameStates } from "../../types"
-import { canDropTokenGuard } from "../../machine/guards"
+import { canDropTokenGuard, canLeaveGuard } from "../../machine/guards"
 
 
 describe("machine/GameMachine", () => {
@@ -23,6 +23,12 @@ describe("machine/GameMachine", () => {
     it('Should not let me join a game twice', () => {
       expect(machine.send(GameModel.events.join("1", "1")).changed).toBe(true)
       expect(machine.send(GameModel.events.join("1", "1")).changed).toBe(false)
+    })
+
+    it('Should let me leave', () => {
+      expect(machine.send(GameModel.events.join("1", "1")).changed).toBe(true)
+      expect(machine.send(GameModel.events.join("2", "2")).changed).toBe(true)
+      expect(machine.send(GameModel.events.leave("1")).changed).toBe(true)
     })
   })
 

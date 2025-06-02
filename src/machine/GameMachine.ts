@@ -21,7 +21,7 @@ export const GameModel = createModel({
 }, {
   events:{
     join:(playerId: Player["id"], name: Player["name"]) => ({playerId, name}),
-    leave:(playerID: Player["id"]) => ({playerID}),
+    leave:(playerId: Player["id"]) => ({playerId}),
     chooseColor:(playerId: Player["id"], color: PlayerColor) => ({playerId, color}),
     start:(playerId: Player["id"]) => ({playerId}),
     dropToken: (playerId: Player["id"], x: number) => ({playerId, x}),

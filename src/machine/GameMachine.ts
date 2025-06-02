@@ -1,7 +1,7 @@
 import { createModel } from 'xstate/lib/model'
 import { GameStates, type GameContext, type GridState, type Player, type PlayerColor, type Postion } from "../types"
-import { canChooseColorGuard, canDropTokenGuard, canJoinGuard, canLeaveGuard, canStartGameGuard, isWiningMoveGuard } from './guards'
-import { dropTokenAction, joinGameAction, leaveGameAction, saveWiningPositionsAction, switchPlayerAction } from './actions'
+import { canChooseColorGuard, canDropTokenGuard, canJoinGuard, canLeaveGuard, canStartGameGuard, isDrawMoveGuard, isWiningMoveGuard } from './guards'
+import { chooseColorGameAction, dropTokenAction, joinGameAction, leaveGameAction, restartAction, saveWiningPositionsAction, setCurrentPlayerAction, switchPlayerAction } from './actions'
 import { interpret, type InterpreterFrom } from 'xstate'
 
 
@@ -49,17 +49,24 @@ export const GameMachine = GameModel.createMachine({
         },
         chooseColor:{
           cond: canChooseColorGuard,
-          target: GameStates.LOBBY
+          target: GameStates.LOBBY,
+          actions: [GameModel.assign(chooseColorGameAction)],
         },
         start:{
           cond: canStartGameGuard,
-          target: GameStates.PLAY
+          target: GameStates.PLAY,
+          actions: [GameModel.assign(setCurrentPlayerAction)]
         }
       }
     },
     [GameStates.PLAY]:{
       on:{
         dropToken:[
+          {
+            cond: isDrawMoveGuard,
+            target: GameStates.DRAW,
+            actions: [GameModel.assign(dropTokenAction)]
+          },
           {
             cond: isWiningMoveGuard,
             target: GameStates.VICTORY,
@@ -76,14 +83,16 @@ export const GameMachine = GameModel.createMachine({
     [GameStates.DRAW]:{
       on:{
         restart:{
-          target: GameStates.LOBBY
+          target: GameStates.LOBBY,
+          actions:[GameModel.assign(restartAction)]
         }
       }
     },
     [GameStates.VICTORY]:{
       on:{
         restart:{
-          target: GameStates.LOBBY
+          target: GameStates.LOBBY,
+          actions:[GameModel.assign(restartAction)]
         }
       }
     }

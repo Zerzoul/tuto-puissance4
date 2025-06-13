@@ -3,7 +3,7 @@ import type { GameModel } from "./machine/GameMachine"
 
 export enum PlayerColor {
   RED = "R",
-  YELLOW = "T"
+  YELLOW = "Y"
 }
 
 export enum GameStates {
@@ -11,6 +11,11 @@ export enum GameStates {
   PLAY = "PLAY",
   VICTORY = "VICTORY",
   DRAW = "DRAW"
+}
+
+export type Postion = {
+  x: number,
+  y: number
 }
 
 export type Player = {

@@ -44,6 +44,9 @@ input:disabled{
 .button:hover {
   background-color: #3f60be;
 }
+.button:disabled {
+  opacity: .5;
+}
 
 .container{
   max-width: 600px;
@@ -110,7 +113,15 @@ input:disabled{
   width: 80%;
   aspect-ratio: 1/1;
   height: auto;
+}
+
+.grid .disc-red,
+.grid .disc-yellow{
   animation: Drop calc(.20s * var(--row)) both;
+}
+
+.disc-active{
+  border: 8px solid #fff
 }
 
 @keyframes Drop {
@@ -141,7 +152,7 @@ input:disabled{
   opacity: 1;
   transform: translateY(0px);
 }
-.grid button {
+button {
   background: none;
   border: none;
   padding: 0;

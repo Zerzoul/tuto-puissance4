@@ -13,7 +13,7 @@ export enum GameStates {
   DRAW = "DRAW"
 }
 
-export type Postion = {
+export type Position = {
   x: number,
   y: number
 }

@@ -1,5 +1,5 @@
 import { createModel } from 'xstate/lib/model'
-import { GameStates, type GameContext, type GridState, type Player, type PlayerColor, type Postion } from "../types"
+import { GameStates, type GameContext, type GridState, type Player, type PlayerColor, type Position } from "../types"
 import { canChooseColorGuard, canDropTokenGuard, canJoinGuard, canLeaveGuard, canStartGameGuard, isDrawMoveGuard, isWiningMoveGuard } from './guards'
 import { chooseColorGameAction, dropTokenAction, joinGameAction, leaveGameAction, restartAction, saveWiningPositionsAction, setCurrentPlayerAction, switchPlayerAction } from './actions'
 import { interpret, type InterpreterFrom } from 'xstate'
@@ -10,7 +10,7 @@ export const GameModel = createModel({
   players: [] as Player[],
   currentPlayer: null as null | Player['id'],
   rowLength: 4,
-  winingPositions: [] as Postion[],
+  winingPositions: [] as Position[],
   grid:[
     ["E", "E", "E", "E", "E", "E", "E"],
     ["E", "E", "E", "E", "E", "E", "E"],
